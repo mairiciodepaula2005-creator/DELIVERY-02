@@ -1,0 +1,8 @@
+# Keep text files consistent across Windows, GitHub and GitHub Pages.
+* text=auto eol=lf
+
+# Treat web assets as text for diffs.
+*.html text
+*.css text
+*.js text
+*.svg text
