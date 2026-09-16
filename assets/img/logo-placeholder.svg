@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2c1f19" />
+      <stop offset="100%" stop-color="#121113" />
+    </radialGradient>
+    <linearGradient id="fireGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#D81B60" />
+      <stop offset="40%" stop-color="#F4511E" />
+      <stop offset="85%" stop-color="#FFB300" />
+      <stop offset="100%" stop-color="#FFF9C4" />
+    </linearGradient>
+    <linearGradient id="bunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFA726" />
+      <stop offset="100%" stop-color="#E65100" />
+    </linearGradient>
+    <linearGradient id="meatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6D4C41" />
+      <stop offset="100%" stop-color="#3E2723" />
+    </linearGradient>
+    <linearGradient id="goldRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFB74D" />
+      <stop offset="50%" stop-color="#FF5722" />
+      <stop offset="100%" stop-color="#E64A19" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="94" fill="url(#bgGlow)" stroke="url(#goldRing)" stroke-width="4" filter="url(#shadow)" />
+
+  <!-- Outer Dashed Ring -->
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#FF9800" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.4" />
+
+  <!-- Flames behind burger -->
+  <path d="M72 95 Q68 62 82 50 Q85 68 96 55 Q102 40 108 30 Q112 52 120 48 Q132 58 126 80 Q138 68 136 92 Z"
+        fill="url(#fireGrad)" opacity="0.9" />
+
+  <!-- Burger Top Bun -->
+  <path d="M54 90 C54 62, 146 62, 146 90 Z" fill="url(#bunGrad)" filter="url(#shadow)" />
+  <!-- Sesame seeds -->
+  <ellipse cx="80" cy="74" rx="2.5" ry="1.5" fill="#FFFDE7" opacity="0.8" transform="rotate(-15 80 74)" />
+  <ellipse cx="100" cy="68" rx="2.5" ry="1.5" fill="#FFFDE7" opacity="0.8" />
+  <ellipse cx="120" cy="74" rx="2.5" ry="1.5" fill="#FFFDE7" opacity="0.8" transform="rotate(15 120 74)" />
+  <ellipse cx="90" cy="80" rx="2" ry="1.2" fill="#FFFDE7" opacity="0.8" />
+  <ellipse cx="110" cy="80" rx="2" ry="1.2" fill="#FFFDE7" opacity="0.8" />
+
+  <!-- Lettuce wave -->
+  <path d="M50 94 Q62 90 74 96 Q86 102 98 94 Q110 88 122 95 Q134 102 148 94 Q152 100 144 101 Q128 103 120 98 Q106 94 96 102 Q82 108 68 98 Q58 97 50 94 Z" fill="#7CB342" />
+
+  <!-- Melted Cheese Ribbon -->
+  <polygon points="56,98 144,98 138,107 122,106 116,116 102,106 82,107 72,114 62,106 56,106" fill="#FFC107" filter="url(#shadow)" />
+
+  <!-- Burger Patty -->
+  <rect x="52" y="103" width="96" height="15" rx="7" fill="url(#meatGrad)" />
+  <!-- Grill marks -->
+  <line x1="68" y1="105" x2="78" y2="116" stroke="#271406" stroke-width="2" stroke-linecap="round" />
+  <line x1="88" y1="105" x2="98" y2="116" stroke="#271406" stroke-width="2" stroke-linecap="round" />
+  <line x1="108" y1="105" x2="118" y2="116" stroke="#271406" stroke-width="2" stroke-linecap="round" />
+  <line x1="128" y1="105" x2="136" y2="114" stroke="#271406" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Bottom Bun -->
+  <path d="M55 120 C55 120 56 130 68 132 L132 132 C144 130 145 120 145 120 Z" fill="url(#bunGrad)" />
+
+  <!-- Chapa Quente Ribbon / Banner -->
+  <g filter="url(#shadow)">
+    <path d="M30 145 L170 145 L158 168 L42 168 Z" fill="#D32F2F" />
+    <polygon points="22,156 30,145 30,168" fill="#B71C1C" />
+    <polygon points="178,156 170,145 170,168" fill="#B71C1C" />
+    <polygon points="30,168 42,168 30,174" fill="#7F0000" />
+    <polygon points="170,168 158,168 170,174" fill="#7F0000" />
+  </g>
+
+  <!-- Store Name Text -->
+  <text x="100" y="161" font-family="'Poppins', 'Arial Black', sans-serif" font-size="12.5" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.2">CHAPA QUENTE</text>
+
+  <!-- Delivery Subtitle -->
+  <text x="100" y="182" font-family="'Poppins', sans-serif" font-size="7.5" font-weight="700" fill="#FFB74D" text-anchor="middle" letter-spacing="2.5">DELIVERY</text>
+
+  <!-- Stars -->
+  <polygon points="62,179 63,181 65,181 63,183 64,185 62,184 60,185 61,183 59,181 61,181" fill="#FFC107" />
+  <polygon points="138,179 139,181 141,181 139,183 140,185 138,184 136,185 137,183 135,181 137,181" fill="#FFC107" />
+</svg>
