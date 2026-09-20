@@ -1318,6 +1318,29 @@ input, textarea, select {
   border-radius: var(--radius-full);
 }
 
+/* Painel administrativo */
+.admin-access { margin-top: 24px; padding: 15px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #f8fafc; }
+.admin-access h4 { font-size: .92rem; color: var(--dark); }
+.admin-access p, .admin-intro, .admin-security-note { font-size: .76rem; color: var(--gray-500); margin-top: 3px; line-height: 1.45; }
+.btn-admin-access, .btn-admin-secondary { border: 1px solid var(--primary); color: var(--primary); font-weight: 700; padding: 8px 12px; border-radius: var(--radius-full); white-space: nowrap; }
+.admin-sheet { max-height: 92vh; }
+.admin-primary-btn { width: 100%; justify-content: center; margin-top: 8px; }
+.admin-security-note { margin-top: 12px; }
+.admin-toolbar, .admin-actions { display: flex; gap: 9px; align-items: center; justify-content: space-between; }
+.admin-toolbar { padding-bottom: 12px; border-bottom: 1px solid var(--gray-200); }
+.admin-section { border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin: 13px 0; padding: 0 12px 12px; }
+.admin-section summary { cursor: pointer; padding: 13px 0; font-weight: 700; color: var(--dark); }
+.admin-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.admin-fields label { display: flex; flex-direction: column; gap: 4px; color: var(--gray-600); font-size: .75rem; font-weight: 600; }
+.admin-field-wide { grid-column: 1 / -1; }
+.admin-actions { flex-wrap: wrap; margin-top: 12px; }
+.admin-actions .admin-primary-btn { flex: 1; min-width: 145px; margin: 0; }
+.danger { color: #dc2626; border-color: #dc2626; }
+.admin-reset { display: block; margin: 16px auto 0; color: #dc2626; border-color: #dc2626; }
+@media (max-width: 360px) { .admin-fields { grid-template-columns: 1fr; } .admin-field-wide { grid-column: auto; } }
+
+.store-hours { font-size: .72rem; color: var(--gray-500); margin-top: 5px; }
+
 /* ==========================================================================
    TOASTS E RODAPÉ
    ========================================================================== */

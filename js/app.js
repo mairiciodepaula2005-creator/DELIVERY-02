@@ -20,8 +20,36 @@ const AppState = {
   currentTab: "home"
 };
 
+const ADMIN_STORAGE_KEY = "chapa_quente_admin_data";
+const ADMIN_CREDENTIALS_KEY = "chapa_quente_admin_credentials";
+const ORIGINAL_STORE_CONFIG = JSON.parse(JSON.stringify(STORE_CONFIG));
+const ORIGINAL_PRODUCTS = JSON.parse(JSON.stringify(PRODUCTS));
+const ORIGINAL_CATEGORIES = JSON.parse(JSON.stringify(CATEGORIES));
+let isAdminAuthenticated = false;
+
+function restoreAdminData() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || "null");
+    if (!saved) return;
+    if (saved.store) Object.assign(STORE_CONFIG, saved.store);
+    if (Array.isArray(saved.products)) PRODUCTS.splice(0, PRODUCTS.length, ...saved.products);
+    if (Array.isArray(saved.categories)) CATEGORIES.splice(0, CATEGORIES.length, ...saved.categories);
+  } catch (error) {
+    console.error("Não foi possível carregar as alterações administrativas.", error);
+  }
+}
+
+function persistAdminData() {
+  localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify({
+    store: STORE_CONFIG,
+    products: PRODUCTS,
+    categories: CATEGORIES
+  }));
+}
+
 // INICIALIZAÇÃO
 document.addEventListener("DOMContentLoaded", () => {
+  restoreAdminData();
   initStoreInfo();
   loadSavedProfile();
   renderCategoriesNav();
@@ -31,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initBottomTabs();
   initScrollSpy();
   renderPastOrders();
+  initAdminPanel();
 });
 
 // FORMATAÇÃO DE MOEDA (BRL)
@@ -45,6 +74,7 @@ function initStoreInfo() {
   const statusEl = document.getElementById("store-status");
   const minOrderEl = document.getElementById("min-order-val");
   const deliveryTimeEl = document.getElementById("delivery-time-val");
+  const hoursEl = document.getElementById("store-hours");
   const pixKeyEl = document.getElementById("pix-key-val");
   const pixNameEl = document.getElementById("pix-name-val");
 
@@ -53,11 +83,17 @@ function initStoreInfo() {
   if (statusEl) statusEl.textContent = STORE_CONFIG.statusLabel;
   if (minOrderEl) minOrderEl.textContent = formatCurrency(STORE_CONFIG.minOrder);
   if (deliveryTimeEl) deliveryTimeEl.textContent = `${STORE_CONFIG.deliveryTimeMin}-${STORE_CONFIG.deliveryTimeMax} min`;
+  if (hoursEl) hoursEl.textContent = `Funcionamento: ${STORE_CONFIG.operatingHours}`;
   if (pixKeyEl) pixKeyEl.textContent = STORE_CONFIG.pixKey;
   if (pixNameEl) pixNameEl.textContent = STORE_CONFIG.pixName;
 
   const supportLink = document.getElementById("support-whatsapp-link");
   if (supportLink) supportLink.href = `https://wa.me/${STORE_CONFIG.whatsapp}`;
+
+  const logo = document.getElementById("store-logo");
+  if (logo && STORE_CONFIG.logoUrl) logo.src = STORE_CONFIG.logoUrl;
+  const cover = document.querySelector(".cover-banner");
+  if (cover) cover.style.backgroundImage = STORE_CONFIG.coverUrl ? `url("${STORE_CONFIG.coverUrl.replace(/"/g, "%22")}")` : "";
 }
 
 // 2. RENDERIZAR ABAS DE CATEGORIAS
@@ -934,6 +970,209 @@ function showToast(message) {
     toast.style.transition = "all 0.3s ease";
     setTimeout(() => toast.remove(), 300);
   }, 2800);
+}
+
+// 16. PAINEL ADMINISTRATIVO LOCAL
+// GitHub Pages não possui servidor: credenciais e alterações são locais a este navegador.
+function encodeAdminSecret(value) {
+  return btoa(unescape(encodeURIComponent(value)));
+}
+
+function initAdminPanel() {
+  const openButton = document.getElementById("btn-open-admin");
+  const modal = document.getElementById("modal-admin");
+  const closeButton = document.getElementById("btn-close-admin");
+  openButton?.addEventListener("click", () => {
+    document.getElementById("modal-profile")?.classList.remove("open");
+    modal?.classList.add("open");
+    document.body.style.overflow = "hidden";
+    showAdminAuthView();
+  });
+  closeButton?.addEventListener("click", closeAdminPanel);
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) closeAdminPanel();
+  });
+  document.getElementById("btn-admin-auth")?.addEventListener("click", authenticateAdmin);
+  document.getElementById("btn-admin-logout")?.addEventListener("click", () => {
+    isAdminAuthenticated = false;
+    showAdminAuthView();
+  });
+  document.getElementById("btn-save-store")?.addEventListener("click", saveStoreFromAdmin);
+  document.getElementById("btn-save-product")?.addEventListener("click", saveProductFromAdmin);
+  document.getElementById("btn-new-product")?.addEventListener("click", createNewProduct);
+  document.getElementById("btn-delete-product")?.addEventListener("click", deleteSelectedProduct);
+  document.getElementById("btn-reset-admin-data")?.addEventListener("click", resetAdminData);
+  document.getElementById("admin-product-select")?.addEventListener("change", loadSelectedProductIntoForm);
+}
+
+function closeAdminPanel() {
+  document.getElementById("modal-admin")?.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function showAdminAuthView() {
+  const hasCredentials = Boolean(localStorage.getItem(ADMIN_CREDENTIALS_KEY));
+  document.getElementById("admin-auth-view").hidden = isAdminAuthenticated;
+  document.getElementById("admin-dashboard").hidden = !isAdminAuthenticated;
+  document.querySelectorAll(".admin-setup-only").forEach(el => el.style.display = hasCredentials ? "none" : "block");
+  const action = document.getElementById("btn-admin-auth");
+  if (action) action.textContent = hasCredentials ? "Entrar no painel" : "Criar acesso administrativo";
+  if (isAdminAuthenticated) populateAdminDashboard();
+}
+
+function authenticateAdmin() {
+  const username = document.getElementById("admin-username")?.value.trim();
+  const password = document.getElementById("admin-password")?.value || "";
+  const confirmation = document.getElementById("admin-password-confirm")?.value || "";
+  const rawCredentials = localStorage.getItem(ADMIN_CREDENTIALS_KEY);
+
+  if (!username || !password) return showToast("Informe usuário e senha.");
+  if (!rawCredentials) {
+    if (password.length < 8) return showToast("Use uma senha com pelo menos 8 caracteres.");
+    if (password !== confirmation) return showToast("A confirmação de senha não confere.");
+    localStorage.setItem(ADMIN_CREDENTIALS_KEY, JSON.stringify({ username, secret: encodeAdminSecret(password) }));
+    showToast("Acesso administrativo criado.");
+  } else {
+    try {
+      const credentials = JSON.parse(rawCredentials);
+      if (credentials.username !== username || credentials.secret !== encodeAdminSecret(password)) {
+        return showToast("Usuário ou senha inválidos.");
+      }
+    } catch {
+      return showToast("Não foi possível validar as credenciais.");
+    }
+  }
+  isAdminAuthenticated = true;
+  document.getElementById("admin-password").value = "";
+  document.getElementById("admin-password-confirm").value = "";
+  showAdminAuthView();
+}
+
+function setAdminValue(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.value = value ?? "";
+}
+
+function populateAdminDashboard() {
+  setAdminValue("admin-store-name", STORE_CONFIG.name);
+  setAdminValue("admin-store-slogan", STORE_CONFIG.slogan);
+  setAdminValue("admin-whatsapp", STORE_CONFIG.whatsapp);
+  setAdminValue("admin-pix-key", STORE_CONFIG.pixKey);
+  setAdminValue("admin-pix-name", STORE_CONFIG.pixName);
+  setAdminValue("admin-delivery-fee", STORE_CONFIG.defaultDeliveryFee);
+  setAdminValue("admin-min-order", STORE_CONFIG.minOrder);
+  setAdminValue("admin-time-min", STORE_CONFIG.deliveryTimeMin);
+  setAdminValue("admin-time-max", STORE_CONFIG.deliveryTimeMax);
+  setAdminValue("admin-hours", STORE_CONFIG.operatingHours);
+  setAdminValue("admin-cover-url", STORE_CONFIG.coverUrl);
+  setAdminValue("admin-logo-url", STORE_CONFIG.logoUrl);
+  renderAdminProductOptions();
+}
+
+function renderAdminProductOptions(selectedId) {
+  const select = document.getElementById("admin-product-select");
+  const categorySelect = document.getElementById("admin-product-category");
+  if (!select || !categorySelect) return;
+  select.replaceChildren();
+  PRODUCTS.forEach(product => {
+    const option = document.createElement("option");
+    option.value = product.id;
+    option.textContent = `${product.name} — ${formatCurrency(product.price)}`;
+    select.appendChild(option);
+  });
+  categorySelect.replaceChildren();
+  CATEGORIES.forEach(category => {
+    const option = document.createElement("option");
+    option.value = category.id;
+    option.textContent = category.name;
+    categorySelect.appendChild(option);
+  });
+  if (selectedId) select.value = String(selectedId);
+  loadSelectedProductIntoForm();
+}
+
+function loadSelectedProductIntoForm() {
+  const productId = Number(document.getElementById("admin-product-select")?.value);
+  const product = PRODUCTS.find(item => item.id === productId);
+  if (!product) return;
+  setAdminValue("admin-product-name", product.name);
+  setAdminValue("admin-product-category", product.categoryId);
+  setAdminValue("admin-product-price", product.price);
+  setAdminValue("admin-product-badge", product.badge);
+  setAdminValue("admin-product-description", product.description);
+  setAdminValue("admin-product-image", product.image);
+}
+
+function saveStoreFromAdmin() {
+  const read = id => document.getElementById(id)?.value.trim() || "";
+  const numeric = id => Math.max(0, Number(read(id)) || 0);
+  STORE_CONFIG.name = read("admin-store-name") || ORIGINAL_STORE_CONFIG.name;
+  STORE_CONFIG.slogan = read("admin-store-slogan");
+  STORE_CONFIG.whatsapp = read("admin-whatsapp").replace(/\D/g, "");
+  STORE_CONFIG.pixKey = read("admin-pix-key");
+  STORE_CONFIG.pixName = read("admin-pix-name");
+  STORE_CONFIG.defaultDeliveryFee = numeric("admin-delivery-fee");
+  STORE_CONFIG.minOrder = numeric("admin-min-order");
+  STORE_CONFIG.deliveryTimeMin = numeric("admin-time-min");
+  STORE_CONFIG.deliveryTimeMax = numeric("admin-time-max");
+  STORE_CONFIG.operatingHours = read("admin-hours");
+  STORE_CONFIG.coverUrl = read("admin-cover-url");
+  STORE_CONFIG.logoUrl = read("admin-logo-url");
+  persistAdminData();
+  initStoreInfo();
+  updateFinancialSummary();
+  showToast("Dados da loja atualizados.");
+}
+
+function saveProductFromAdmin() {
+  const id = Number(document.getElementById("admin-product-select")?.value);
+  const product = PRODUCTS.find(item => item.id === id);
+  const categoryId = document.getElementById("admin-product-category")?.value;
+  const name = document.getElementById("admin-product-name")?.value.trim();
+  const price = Number(document.getElementById("admin-product-price")?.value);
+  if (!product || !name || !categoryId || !Number.isFinite(price) || price < 0) return showToast("Preencha nome, categoria e preço válido.");
+  const category = CATEGORIES.find(item => item.id === categoryId);
+  product.name = name;
+  product.categoryId = categoryId;
+  product.categoryName = category?.name || "";
+  product.price = price;
+  product.badge = document.getElementById("admin-product-badge")?.value.trim() || "";
+  product.description = document.getElementById("admin-product-description")?.value.trim() || "";
+  product.image = document.getElementById("admin-product-image")?.value.trim() || "";
+  persistAdminData();
+  renderCategoriesNav(); renderProductCatalog(); initScrollSpy(); renderAdminProductOptions(product.id);
+  showToast("Produto atualizado.");
+}
+
+function createNewProduct() {
+  const id = Date.now();
+  const category = CATEGORIES[0];
+  if (!category) return showToast("Crie uma categoria antes de adicionar produtos.");
+  PRODUCTS.push({ id, categoryId: category.id, categoryName: category.name, name: "Novo produto", description: "", price: 0, image: "", badge: "" });
+  persistAdminData();
+  renderAdminProductOptions(id);
+  showToast("Novo produto criado. Preencha os dados e salve.");
+}
+
+function deleteSelectedProduct() {
+  const id = Number(document.getElementById("admin-product-select")?.value);
+  const index = PRODUCTS.findIndex(item => item.id === id);
+  if (index < 0) return;
+  if (!confirm("Excluir este produto do cardápio?")) return;
+  PRODUCTS.splice(index, 1);
+  persistAdminData();
+  renderCategoriesNav(); renderProductCatalog(); initScrollSpy(); renderAdminProductOptions();
+  showToast("Produto excluído.");
+}
+
+function resetAdminData() {
+  if (!confirm("Restaurar dados originais do cardápio neste navegador?")) return;
+  Object.assign(STORE_CONFIG, JSON.parse(JSON.stringify(ORIGINAL_STORE_CONFIG)));
+  PRODUCTS.splice(0, PRODUCTS.length, ...JSON.parse(JSON.stringify(ORIGINAL_PRODUCTS)));
+  CATEGORIES.splice(0, CATEGORIES.length, ...JSON.parse(JSON.stringify(ORIGINAL_CATEGORIES)));
+  localStorage.removeItem(ADMIN_STORAGE_KEY);
+  initStoreInfo(); renderCategoriesNav(); renderProductCatalog(); renderNeighborhoodsSelect(); initScrollSpy(); populateAdminDashboard();
+  showToast("Dados originais restaurados.");
 }
 
 // ESCAPAR HTML
