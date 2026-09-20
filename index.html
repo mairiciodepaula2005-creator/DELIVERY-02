@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Folha de Estilos Principal (Mobile-First) -->
-  <link rel="stylesheet" href="css/styles.css?v=admin-3" />
+  <link rel="stylesheet" href="css/styles.css?v=admin-4" />
 </head>
 <body>
 
@@ -503,10 +503,11 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="admin-password">Senha</label>
-            <input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="Digite sua senha" />
+            <div class="password-field"><input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="Digite sua senha" /><button type="button" class="btn-toggle-password" data-password-target="admin-password">Mostrar</button></div>
           </div>
           <button class="btn-add-cart admin-primary-btn" id="btn-admin-auth">Entrar no painel</button>
           <p class="admin-security-note">Use as credenciais iniciais fornecidas pelo responsável pelo site. Após entrar, altere-as na seção “Credenciais de acesso”. Em um site estático, o acesso e as alterações ficam salvos somente neste navegador.</p>
+          <button type="button" class="btn-admin-secondary admin-recover-access" id="btn-recover-admin-access">Restaurar acesso padrão</button>
         </div>
 
         <div id="admin-dashboard" hidden>
@@ -518,8 +519,8 @@
             <p class="admin-intro">Defina um novo usuário e senha para este navegador.</p>
             <div class="admin-fields">
               <label>Usuário<input id="admin-new-username" class="form-input" autocomplete="username" /></label>
-              <label>Nova senha<input id="admin-new-password" class="form-input" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" /></label>
-              <label class="admin-field-wide">Confirmar nova senha<input id="admin-new-password-confirm" class="form-input" type="password" autocomplete="new-password" /></label>
+              <label>Nova senha<div class="password-field"><input id="admin-new-password" class="form-input" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" /><button type="button" class="btn-toggle-password" data-password-target="admin-new-password">Mostrar</button></div></label>
+              <label class="admin-field-wide">Confirmar nova senha<div class="password-field"><input id="admin-new-password-confirm" class="form-input" type="password" autocomplete="new-password" /><button type="button" class="btn-toggle-password" data-password-target="admin-new-password-confirm">Mostrar</button></div></label>
             </div>
             <button class="btn-admin-secondary admin-change-credentials" id="btn-change-admin-credentials">Salvar novas credenciais</button>
           </details>
@@ -575,8 +576,8 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- SCRIPTS -->
-  <script src="js/products.js?v=admin-3"></script>
-  <script src="js/app.js?v=admin-3"></script>
+  <script src="js/products.js?v=admin-4"></script>
+  <script src="js/app.js?v=admin-4"></script>
 
 </body>
 </html>
