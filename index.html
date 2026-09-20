@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Folha de Estilos Principal (Mobile-First) -->
-  <link rel="stylesheet" href="css/styles.css?v=admin-2" />
+  <link rel="stylesheet" href="css/styles.css?v=admin-3" />
 </head>
 <body>
 
@@ -505,17 +505,24 @@
             <label class="form-label" for="admin-password">Senha</label>
             <input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="Digite sua senha" />
           </div>
-          <div class="form-group admin-setup-only">
-            <label class="form-label" for="admin-password-confirm">Confirme a senha</label>
-            <input class="form-input" id="admin-password-confirm" type="password" autocomplete="new-password" placeholder="Repita a senha" />
-          </div>
-          <button class="btn-add-cart admin-primary-btn" id="btn-admin-auth">Configurar acesso</button>
-          <p class="admin-security-note">Em um site estático, o acesso e as alterações ficam salvos somente neste navegador. Para segurança entre dispositivos, é necessário um sistema com servidor.</p>
+          <button class="btn-add-cart admin-primary-btn" id="btn-admin-auth">Entrar no painel</button>
+          <p class="admin-security-note">Use as credenciais iniciais fornecidas pelo responsável pelo site. Após entrar, altere-as na seção “Credenciais de acesso”. Em um site estático, o acesso e as alterações ficam salvos somente neste navegador.</p>
         </div>
 
         <div id="admin-dashboard" hidden>
           <div class="admin-toolbar"><strong>Painel da loja</strong><button class="btn-admin-secondary" id="btn-admin-logout">Sair</button></div>
           <p class="admin-intro">Altere os campos e salve para atualizar esta cópia do cardápio imediatamente.</p>
+
+          <details class="admin-section">
+            <summary>Credenciais de acesso</summary>
+            <p class="admin-intro">Defina um novo usuário e senha para este navegador.</p>
+            <div class="admin-fields">
+              <label>Usuário<input id="admin-new-username" class="form-input" autocomplete="username" /></label>
+              <label>Nova senha<input id="admin-new-password" class="form-input" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" /></label>
+              <label class="admin-field-wide">Confirmar nova senha<input id="admin-new-password-confirm" class="form-input" type="password" autocomplete="new-password" /></label>
+            </div>
+            <button class="btn-admin-secondary admin-change-credentials" id="btn-change-admin-credentials">Salvar novas credenciais</button>
+          </details>
 
           <details class="admin-section" open>
             <summary>Dados, taxas e horários</summary>
@@ -568,8 +575,8 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- SCRIPTS -->
-  <script src="js/products.js?v=admin-2"></script>
-  <script src="js/app.js?v=admin-2"></script>
+  <script src="js/products.js?v=admin-3"></script>
+  <script src="js/app.js?v=admin-3"></script>
 
 </body>
 </html>
