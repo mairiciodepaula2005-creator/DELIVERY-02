@@ -69,6 +69,7 @@
               <span class="dot-sep">•</span>
               <span>Mínimo: <strong id="min-order-val">R$ 10,00</strong></span>
             </div>
+            <p class="store-hours" id="store-hours">Funcionamento: Terça a Domingo das 18h às 02h</p>
           </div>
         </div>
       </div>
@@ -467,11 +468,95 @@
           <span>Salvar Meus Dados</span>
         </button>
 
+        <section class="admin-access" aria-labelledby="admin-access-title">
+          <div>
+            <h4 id="admin-access-title">Área administrativa</h4>
+            <p>Gerencie cardápio, preços, identidade visual, horários, taxas e promoções.</p>
+          </div>
+          <button class="btn-admin-access" id="btn-open-admin">Entrar</button>
+        </section>
+
         <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--gray-200); text-align: center;">
           <p style="font-size: 0.78rem; color: var(--gray-500); margin-bottom: 8px;">Precisa de ajuda com seu pedido?</p>
           <a id="support-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-order" style="font-size: 0.85rem; padding: 9px 14px;">
             <span>Falar com o Restaurante</span> 💬
           </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAINEL ADMINISTRATIVO (dados persistidos neste navegador) -->
+  <div class="tab-sheet-modal" id="modal-admin" aria-hidden="true">
+    <div class="tab-sheet-container admin-sheet">
+      <div class="drawer-handle-bar"></div>
+      <div class="tab-sheet-header">
+        <h3 class="tab-sheet-title">⚙️ Administração</h3>
+        <button class="drawer-close" id="btn-close-admin" title="Fechar">✕</button>
+      </div>
+      <div class="tab-sheet-body">
+        <div id="admin-auth-view">
+          <p class="admin-intro">Acesso restrito ao responsável pela loja.</p>
+          <div class="form-group">
+            <label class="form-label" for="admin-username">Usuário</label>
+            <input class="form-input" id="admin-username" autocomplete="username" placeholder="administrador" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="admin-password">Senha</label>
+            <input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="Digite sua senha" />
+          </div>
+          <div class="form-group admin-setup-only">
+            <label class="form-label" for="admin-password-confirm">Confirme a senha</label>
+            <input class="form-input" id="admin-password-confirm" type="password" autocomplete="new-password" placeholder="Repita a senha" />
+          </div>
+          <button class="btn-add-cart admin-primary-btn" id="btn-admin-auth">Configurar acesso</button>
+          <p class="admin-security-note">Em um site estático, o acesso e as alterações ficam salvos somente neste navegador. Para segurança entre dispositivos, é necessário um sistema com servidor.</p>
+        </div>
+
+        <div id="admin-dashboard" hidden>
+          <div class="admin-toolbar"><strong>Painel da loja</strong><button class="btn-admin-secondary" id="btn-admin-logout">Sair</button></div>
+          <p class="admin-intro">Altere os campos e salve para atualizar esta cópia do cardápio imediatamente.</p>
+
+          <details class="admin-section" open>
+            <summary>Dados, taxas e horários</summary>
+            <div class="admin-fields">
+              <label>Nome<input id="admin-store-name" class="form-input" /></label>
+              <label>Slogan<input id="admin-store-slogan" class="form-input" /></label>
+              <label>WhatsApp (DDI + número)<input id="admin-whatsapp" class="form-input" inputmode="numeric" /></label>
+              <label>Chave PIX<input id="admin-pix-key" class="form-input" /></label>
+              <label>Titular PIX<input id="admin-pix-name" class="form-input" /></label>
+              <label>Taxa padrão de entrega (R$)<input id="admin-delivery-fee" class="form-input" type="number" min="0" step="0.01" /></label>
+              <label>Pedido mínimo (R$)<input id="admin-min-order" class="form-input" type="number" min="0" step="0.01" /></label>
+              <label>Tempo mínimo (min)<input id="admin-time-min" class="form-input" type="number" min="0" /></label>
+              <label>Tempo máximo (min)<input id="admin-time-max" class="form-input" type="number" min="0" /></label>
+              <label class="admin-field-wide">Horário de funcionamento<input id="admin-hours" class="form-input" /></label>
+            </div>
+          </details>
+
+          <details class="admin-section">
+            <summary>Identidade visual</summary>
+            <div class="admin-fields">
+              <label class="admin-field-wide">URL da foto de capa<input id="admin-cover-url" class="form-input" type="url" placeholder="https://..." /></label>
+              <label class="admin-field-wide">URL da logo<input id="admin-logo-url" class="form-input" type="url" placeholder="https://..." /></label>
+            </div>
+          </details>
+
+          <details class="admin-section">
+            <summary>Produto e promoção</summary>
+            <div class="form-group"><label class="form-label" for="admin-product-select">Produto para editar</label><select id="admin-product-select" class="form-input"></select></div>
+            <div class="admin-fields">
+              <label>Nome<input id="admin-product-name" class="form-input" /></label>
+              <label>Categoria<select id="admin-product-category" class="form-input"></select></label>
+              <label>Preço (R$)<input id="admin-product-price" class="form-input" type="number" min="0" step="0.01" /></label>
+              <label>Promoção<input id="admin-product-badge" class="form-input" placeholder="Ex.: PROMO" /></label>
+              <label class="admin-field-wide">Descrição<textarea id="admin-product-description" class="form-input" rows="3"></textarea></label>
+              <label class="admin-field-wide">URL da foto<input id="admin-product-image" class="form-input" type="url" placeholder="https://..." /></label>
+            </div>
+            <div class="admin-actions"><button class="btn-admin-secondary" id="btn-new-product">Novo produto</button><button class="btn-admin-secondary danger" id="btn-delete-product">Excluir</button><button class="btn-add-cart admin-primary-btn" id="btn-save-product">Salvar produto</button></div>
+          </details>
+
+          <button class="btn-add-cart admin-primary-btn" id="btn-save-store">Salvar alterações da loja</button>
+          <button class="btn-admin-secondary admin-reset" id="btn-reset-admin-data">Restaurar dados originais</button>
         </div>
       </div>
     </div>
