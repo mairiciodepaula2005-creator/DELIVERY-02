@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Folha de Estilos Principal (Mobile-First) -->
-  <link rel="stylesheet" href="css/styles.css?v=admin-5" />
+  <link rel="stylesheet" href="css/styles.css?v=admin-6" />
 </head>
 <body>
 
@@ -473,7 +473,7 @@
             <h4 id="admin-access-title">Área administrativa</h4>
             <p>Gerencie cardápio, preços, identidade visual, horários, taxas e promoções.</p>
           </div>
-          <button type="button" class="btn-admin-access" id="btn-open-admin" onclick="openAdminPanel()">Acessar painel</button>
+          <button type="button" class="btn-admin-access" id="btn-open-admin" onclick="adminOpenFallback()">Acessar painel</button>
         </section>
 
         <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--gray-200); text-align: center;">
@@ -503,11 +503,11 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="admin-password">Senha</label>
-            <div class="password-field"><input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="Digite sua senha" /><button type="button" class="btn-toggle-password" data-password-target="admin-password" onclick="togglePasswordVisibility(this)">Mostrar</button></div>
+            <div class="password-field"><input class="form-input" id="admin-password" type="password" autocomplete="current-password" placeholder="Digite sua senha" /><button type="button" class="btn-toggle-password" data-password-target="admin-password" onclick="adminTogglePassword(this)">Mostrar</button></div>
           </div>
-          <button type="button" class="btn-add-cart admin-primary-btn" id="btn-admin-auth" onclick="authenticateAdmin()">Entrar no painel</button>
+          <button type="button" class="btn-add-cart admin-primary-btn" id="btn-admin-auth" onclick="adminLoginFallback()">Entrar no painel</button>
           <p class="admin-security-note">Use as credenciais iniciais fornecidas pelo responsável pelo site. Após entrar, altere-as na seção “Credenciais de acesso”. Em um site estático, o acesso e as alterações ficam salvos somente neste navegador.</p>
-          <button type="button" class="btn-admin-secondary admin-recover-access" id="btn-recover-admin-access" onclick="recoverDefaultAdminAccess()">Restaurar acesso padrão</button>
+          <button type="button" class="btn-admin-secondary admin-recover-access" id="btn-recover-admin-access" onclick="adminRestoreDefaultFallback()">Restaurar acesso padrão</button>
         </div>
 
         <div id="admin-dashboard" hidden>
@@ -519,8 +519,8 @@
             <p class="admin-intro">Defina um novo usuário e senha para este navegador.</p>
             <div class="admin-fields">
               <label>Usuário<input id="admin-new-username" class="form-input" autocomplete="username" /></label>
-              <label>Nova senha<div class="password-field"><input id="admin-new-password" class="form-input" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" /><button type="button" class="btn-toggle-password" data-password-target="admin-new-password" onclick="togglePasswordVisibility(this)">Mostrar</button></div></label>
-              <label class="admin-field-wide">Confirmar nova senha<div class="password-field"><input id="admin-new-password-confirm" class="form-input" type="password" autocomplete="new-password" /><button type="button" class="btn-toggle-password" data-password-target="admin-new-password-confirm" onclick="togglePasswordVisibility(this)">Mostrar</button></div></label>
+              <label>Nova senha<div class="password-field"><input id="admin-new-password" class="form-input" type="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" /><button type="button" class="btn-toggle-password" data-password-target="admin-new-password" onclick="adminTogglePassword(this)">Mostrar</button></div></label>
+              <label class="admin-field-wide">Confirmar nova senha<div class="password-field"><input id="admin-new-password-confirm" class="form-input" type="password" autocomplete="new-password" /><button type="button" class="btn-toggle-password" data-password-target="admin-new-password-confirm" onclick="adminTogglePassword(this)">Mostrar</button></div></label>
             </div>
             <button class="btn-admin-secondary admin-change-credentials" id="btn-change-admin-credentials">Salvar novas credenciais</button>
           </details>
@@ -576,8 +576,43 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- SCRIPTS -->
-  <script src="js/products.js?v=admin-5"></script>
-  <script src="js/app.js?v=admin-5"></script>
+  <script src="js/products.js?v=admin-6"></script>
+  <script src="js/app.js?v=admin-6"></script>
+  <script>
+    /* Contingência para controles de acesso: funciona mesmo se outro script atrasar. */
+    function adminTogglePassword(button) {
+      const input = document.getElementById(button.dataset.passwordTarget);
+      if (!input) return;
+      const hidden = input.type === 'password';
+      input.type = hidden ? 'text' : 'password';
+      button.textContent = hidden ? 'Ocultar' : 'Mostrar';
+    }
+    function adminOpenFallback() {
+      document.getElementById('modal-profile').classList.remove('open');
+      document.getElementById('modal-admin').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (typeof showAdminAuthView === 'function') showAdminAuthView();
+    }
+    function adminRestoreDefaultFallback() {
+      localStorage.removeItem('chapa_quente_admin_credentials');
+      document.getElementById('admin-username').value = 'admin';
+      document.getElementById('admin-password').value = '';
+      alert('Acesso padrão restaurado. Usuário: admin | Senha: Chapa@2026');
+    }
+    function adminLoginFallback() {
+      const username = document.getElementById('admin-username').value.trim();
+      const password = document.getElementById('admin-password').value;
+      let valid = username === 'admin' && password === 'Chapa@2026';
+      try {
+        const saved = JSON.parse(localStorage.getItem('chapa_quente_admin_credentials') || 'null');
+        if (saved && saved.username === username && saved.secret === btoa(unescape(encodeURIComponent(password)))) valid = true;
+      } catch (_) {}
+      if (!valid) return alert('Usuário ou senha inválidos. Use Restaurar acesso padrão e tente novamente.');
+      document.getElementById('admin-auth-view').hidden = true;
+      document.getElementById('admin-dashboard').hidden = false;
+      if (typeof populateAdminDashboard === 'function') populateAdminDashboard();
+    }
+  </script>
 
 </body>
 </html>
