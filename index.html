@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Folha de Estilos Principal (Mobile-First) -->
-  <link rel="stylesheet" href="css/styles.css?v=admin-6" />
+  <link rel="stylesheet" href="css/styles.css?v=admin-7" />
 </head>
 <body>
 
@@ -250,10 +250,8 @@
         <!-- Formulário de Endereço de Entrega -->
         <div id="delivery-address-container">
           <div class="form-group">
-            <label class="form-label" for="select-neighborhood">Selecione seu Bairro *</label>
-            <select id="select-neighborhood" class="form-select">
-              <option value="">Carregando bairros...</option>
-            </select>
+            <label class="form-label" for="input-neighborhood">Bairro *</label>
+            <input type="text" id="input-neighborhood" class="form-input" placeholder="Digite seu bairro" autocomplete="address-level3" />
           </div>
 
           <div class="form-row">
@@ -302,11 +300,11 @@
           </div>
           <div class="payment-card" data-method="credit">
             <span>💳 Crédito</span>
-            <small style="color: var(--gray-500); font-weight: 500;">+ R$ 2,00</small>
+            <small style="color: var(--success); font-weight: 500;">Sem taxa</small>
           </div>
           <div class="payment-card" data-method="debit">
             <span>💳 Débito</span>
-            <small style="color: var(--gray-500); font-weight: 500;">+ R$ 1,00</small>
+            <small style="color: var(--success); font-weight: 500;">Sem taxa</small>
           </div>
           <div class="payment-card" data-method="cash">
             <span>💵 Dinheiro</span>
@@ -348,10 +346,6 @@
           <div class="summary-line" id="row-discount" style="display: none; color: #16a34a;">
             <span>Desconto Cupom:</span>
             <span id="summary-discount">- R$ 0,00</span>
-          </div>
-          <div class="summary-line" id="row-card-tax" style="display: none;">
-            <span>Taxa Maquininha:</span>
-            <span id="summary-card-tax">R$ 0,00</span>
           </div>
           <div class="summary-line total">
             <span>Total do Pedido:</span>
@@ -576,8 +570,8 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- SCRIPTS -->
-  <script src="js/products.js?v=admin-6"></script>
-  <script src="js/app.js?v=admin-6"></script>
+  <script src="js/products.js?v=admin-7"></script>
+  <script src="js/app.js?v=admin-7"></script>
   <script>
     /* Contingência para controles de acesso: funciona mesmo se outro script atrasar. */
     function adminTogglePassword(button) {
